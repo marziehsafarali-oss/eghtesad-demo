@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>شبیه‌ساز تعاملی مرز امکانات تولید (PPF) - اقتصاد دهم</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Tahoma, sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; color: #333; }
+    .container { max-width: 1000px; margin: 0 auto; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+    h1 { color: #1b4d3e; text-align: center; font-size: 22px; margin-bottom: 5px; }
+    .subtitle { text-align: center; color: #666; font-size: 14px; margin-bottom: 25px; }
+    .grid { display: flex; flex-wrap: wrap; gap: 20px; }
+    .chart-box { flex: 1 1 500px; background: #fafafa; padding: 15px; border-radius: 12px; border: 1px solid #e0e0e0; }
+    .controls-box { flex: 1 1 350px; display: flex; flex-direction: column; gap: 15px; }
+    .card { background: #eef7f2; padding: 15px; border-radius: 10px; border-right: 4px solid #27ae60; }
+    label { display: block; margin-top: 10px; font-weight: bold; font-size: 13px; }
+    input[type=range] { width: 100%; }
+    .btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    button { flex: 1 1 45%; padding: 10px; border: none; border-radius: 8px; background: #1b4d3e; color: white; cursor: pointer; font-family: Tahoma, sans-serif; font-size: 12px; transition: background 0.2s; }
+    button:hover { background: #27ae60; }
+    .result { font-size: 14px; line-height: 1.6; }
+    .badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-weight: bold; color: white; font-size: 12px; }
+    .bg-green { background-color: #27ae60; }
+    .bg-orange { background-color: #e67e22; }
+    .bg-red { background-color: #e74c3c; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>📊 شبیه‌ساز مرز امکانات تولید (PPF)</h1>
+  <div class="subtitle">منطبق بر درس چهارم کتاب درسی اقتصاد پایه دهم انسانی</div>
+  <div class="grid">
+    <div class="chart-box"><canvas id="ppfChart"></canvas></div>
+    <div class="controls-box">
+      <div class="card">
+        <h3>🎛️ تنظیم میزان تولید کارخانه</h3>
+        <label>تولید آبمیوه (بطری): <span id="juiceVal" style="color:#27ae60">200</span></label>
+        <input type="range" id="juiceInput" min="0" max="500" value="200" step="10">
+        <label>تولید بستنی (عدد): <span id="iceVal" style="color:#2980b9">750</span></label>
+        <input type="range" id="iceInput" min="0" max="1000" value="750" step="10">
+      </div>
+      <div class="card" style="border-right-color:#2980b9;background:#f0f8ff;">
+        <h3>📌 تحلیل وضعیت نقطه انتخابی</h3>
+        <div id="statusAnalysis" class="result">در حال محاسبه...</div>
+      </div>
+      <div class="card" style="border-right-color:#f39c12;background:#fffdf5;">
+        <h3>💡 سناریوهای کتاب درسی (آزمایش سریع)</h3>
+        <div class="btn-group">
+          <button onclick="setScenario('efficient')">نقطه کارا (روی مرز)</button>
+          <button onclick="setScenario('inefficient')">بیکاری کارگران (ناکارا)</button>
+          <button onclick="setScenario('impossible')">نقطه غیرقابل دستیابی</button>
+          <button onclick="setScenario('techBoost')">افزایش فناوری / منابع</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  let juiceVal = 200;
+  let iceVal = 750;
+  let techFactor = 1.0;
+  function getMaxIce(juice) {
+    const normJ = juice / techFactor;
+    if (normJ > 500) return -1;
+    return (1000 - Math.pow(normJ / 500, 2) * 1000) * techFactor;
+  }
+  function generatePPFData() {
+    let data = [];
+    for (let j = 0; j <= 500 * techFactor; j += 20) {
+      let maxI = getMaxIce(j);
+      data.push({ x: j, y: maxI });
+    }
+    return data;
+  }
+  const ctx = document.getElementById('ppfChart').getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'scatter',
+    data: { datasets: [
+      { label: 'مرز امکانات تولید (PPF)', data: generatePPFData(), showLine: true, borderColor: '#1b4d3e', borderWidth: 3, backgroundColor: 'rgba(27, 77, 62, 0.1)', fill: true, pointRadius: 0 },
+      { label: 'نقطه تولید فعلی شما', data: [{ x: juiceVal, y: iceVal }], backgroundColor: '#e74c3c', pointRadius: 8, pointHoverRadius: 10 }
+    ]},
+    options: { responsive: true, scales: {
+      x: { title: { display: true, text: 'مقدار آبمیوه (بطری)' }, min: 0, max: 600 },
+      y: { title: { display: true, text: 'مقدار بستنی (عدد)' }, min: 0, max: 1200 }
+    }}
+  });
+  function updateAnalysis() {
+    const maxAllowedIce = getMaxIce(juiceVal);
+    const analysisBox = document.getElementById('statusAnalysis');
+    document.getElementById('juiceVal').innerText = juiceVal;
+    document.getElementById('iceVal').innerText = iceVal;
+    let html = '';
+    if (maxAllowedIce === -1 || iceVal > maxAllowedIce + 15) {
+      html = `وضعیت: <span class="badge bg-red">غیرقابل دستیابی</span><br><strong>علت:</strong> با منابع و فناوری فعلی، جامعه امکان تولید این سطح از بستنی و آبمیوه را ندارد (نقطه خارج از مرز).`;
+    } else if (Math.abs(iceVal - maxAllowedIce) <= 15) {
+      html = `وضعیت: <span class="badge bg-green">تخصیص کارا</span><br><strong>علت:</strong> از تمامی منابع کمیاب و کارگران به بهترین شکل استفاده شده است (نقطه روی مرز).`;
+    } else {
+      html = `وضعیت: <span class="badge bg-orange">ناکارا / رکود و بیکاری</span><br><strong>علت:</strong> برخی کارگران یا سرمایه‌ها بیکارند. می‌توانید بدون کاهش آبمیوه، بستنی بیشتری تولید کنید (نقطه داخل مرز).`;
+    }
+    analysisBox.innerHTML = html;
+    chart.data.datasets[0].data = generatePPFData();
+    chart.data.datasets[1].data = [{ x: juiceVal, y: iceVal }];
+    chart.update();
+  }
+  document.getElementById('juiceInput').addEventListener('input', (e) => { juiceVal = parseInt(e.target.value); updateAnalysis(); });
+  document.getElementById('iceInput').addEventListener('input', (e) => { iceVal = parseInt(e.target.value); updateAnalysis(); });
+  function setScenario(type) {
+    techFactor = 1.0;
+    if (type === 'efficient') { juiceVal = 300; iceVal = 640; }
+    else if (type === 'inefficient') { juiceVal = 200; iceVal = 400; }
+    else if (type === 'impossible') { juiceVal = 400; iceVal = 900; }
+    else if (type === 'techBoost') { techFactor = 1.2; juiceVal = 350; iceVal = 800; }
+    document.getElementById('juiceInput').value = juiceVal;
+    document.getElementById('iceInput').value = iceVal;
+    updateAnalysis();
+  }
+  updateAnalysis();
+</script>
+</body>
+</html>
