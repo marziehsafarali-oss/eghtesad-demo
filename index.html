@@ -3,308 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بازی بزرگ مدیریت و تحلیل اقتصادی | مرضیه صفرعلی</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+    <title>بازی ماجراجویی اقتصاد دهم | نقشه مراحل & مأموریت‌ها</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-
-    <header class="app-header">
-        <div class="header-container">
-            <div class="badge-container">
-                <span class="secretariat-badge">🏛️ دبیرخانه کشوری اقتصاد آموزش و پرورش</span>
-                <span class="version-badge">نسخه ماجراجویی v3.0</span>
+    <div id="app">
+        <!-- Header & Player Scoreboard -->
+        <header class="main-header">
+            <div class="logo-area">
+                <span class="badge-tag">دبیرخانه کشوری اقتصاد</span>
+                <h1>🎮 ماجراجویی بزرگ در دنیای اقتصاد</h1>
             </div>
-            <h1 class="main-title">🎮 بازی جامع شبیه‌ساز و تحلیل‌گر اقتصادی دهم</h1>
-            <h2 class="sub-title">طراح و توسعه‌دهنده: <span>مرضیه صفرعلی</span> <small>(عضو دبیرخانه کشوری اقتصاد)</small></h2>
-            <p class="motto">«اقتصاد را فقط تدریس نکنیم؛ اندیشیدن اقتصادی را زندگی کنیم. ✨»</p>
+            <div class="player-stats">
+                <div class="stat-box">
+                    <span class="icon">⭐</span>
+                    <span class="label">ستاره‌ها:</span>
+                    <strong id="total-stars">0 / 12</strong>
+                </div>
+                <div class="stat-box">
+                    <span class="icon">🪙</span>
+                    <span class="label">سکه و امتیاز:</span>
+                    <strong id="total-score">0</strong>
+                </div>
+                <div class="designer-badge">
+                    <span class="icon">🎓</span>
+                    <div class="info">
+                        <span class="title">طراح:</span>
+                        <strong class="name">مرضیه صفرعلی</strong>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Slogan Banner -->
+        <div class="slogan-banner">
+            ✨ «اقتصاد را فقط تدریس نکنیم؛ اندیشیدن اقتصادی را زندگی کنیم.» ✨
         </div>
-    </header>
 
-    <div class="container">
-        <section class="adventure-dashboard" aria-label="داشبورد بازی">
-            <div class="adventure-intro">
-                <div><span class="eyebrow">مأموریت شما</span><h2>🏙️ شهر اقتصاد را نجات بده!</h2><p>چهار منطقه را فتح کن، چالش‌ها را حل کن و نشان تحلیل‌گر اقتصادی بگیر.</p></div>
-                <div class="player-level"><span>⭐ سطح تحلیل‌گری</span><strong id="player-level">۱</strong><small id="player-rank">کارآموز اقتصاد</small></div>
+        <!-- MAIN MAP VIEW -->
+        <div id="map-view" class="view-screen active">
+            <div class="map-header">
+                <h2>🗺️ نقشه راه ماجراجویی (انتخاب مرحله و مأموریت)</h2>
+                <p>روی هر مرحله کلیک کنید تا وارد مأموریت و معماهای اقتصادی آن شوید!</p>
             </div>
-            <div class="progress-area"><div class="progress-label"><span>پیشرفت ماجراجویی</span><strong id="progress-text">۰ از ۴ مأموریت</strong></div><div class="progress-track"><span id="progress-fill"></span></div></div>
-            <div class="mission-map">
-                <button class="mission-node" onclick="startMission(1)"><span class="mission-icon">🏭</span><span class="mission-name">کارخانه تولید</span><small>محدودیت و انتخاب</small><b id="mission-status-1">مأموریت باز</b></button>
-                <span class="map-link">➜</span>
-                <button class="mission-node" onclick="startMission(2)"><span class="mission-icon">🛒</span><span class="mission-name">بازار شهر</span><small>عرضه و تقاضا</small><b id="mission-status-2">مأموریت باز</b></button>
-                <span class="map-link">➜</span>
-                <button class="mission-node" onclick="startMission(3)"><span class="mission-icon">🏦</span><span class="mission-name">اتاق تصمیم</span><small>تورم و تولید</small><b id="mission-status-3">مأموریت باز</b></button>
-                <span class="map-link">➜</span>
-                <button class="mission-node" onclick="startMission(4)"><span class="mission-icon">💎</span><span class="mission-name">گنجینه مالی</span><small>پس‌انداز و دارایی</small><b id="mission-status-4">مأموریت باز</b></button>
-            </div>
-            <div class="adventure-bottom"><div>🏅 امتیاز تجربه: <strong id="xp-total">۰</strong> XP</div><button class="mission-quiz-btn" onclick="openMissionQuiz()">🎯 چالش دانشی این مرحله</button><button class="reset-game-btn" onclick="resetAdventure()">شروع دوباره</button></div>
-            <p class="game-note">این نسخه شامل چهار منطقه شبیه‌سازی است؛ برای پوشش دقیق همه درس‌های کتاب، سؤال‌های نهایی باید با متن چاپ فعلی کتاب تطبیق داده شوند.</p>
-        </section>
-        <!-- Navigation Tabs -->
-        <nav class="chapter-nav">
-            <button class="nav-btn active" onclick="switchChapter(1)">
-                <span class="ch-num">فصل ۱</span>
-                <span class="ch-title">مرز امکانات و تولید 🍦🥤</span>
-            </button>
-            <button class="nav-btn" onclick="switchChapter(2)">
-                <span class="ch-num">فصل ۲</span>
-                <span class="ch-title">بازار، تعادل و دولت ⚖️🏛️</span>
-            </button>
-            <button class="nav-btn" onclick="switchChapter(3)">
-                <span class="ch-num">فصل ۳</span>
-                <span class="ch-title">اقتصاد کلان و تورم 📈📉</span>
-            </button>
-            <button class="nav-btn" onclick="switchChapter(4)">
-                <span class="ch-num">فصل ۴</span>
-                <span class="ch-title">هوش مالی و طلا 🪙💼</span>
-            </button>
-        </nav>
 
-        <!-- Avatar & Voice Guide Box -->
-        <section class="avatar-companion-card">
-            <div class="avatar-box">
-                <!-- SVG Animated Pixar-style Modern Avatar -->
-                <svg id="pixar-avatar" viewBox="0 0 200 200" class="avatar-svg">
-                    <!-- Head & Skin -->
-                    <circle cx="100" cy="100" r="65" fill="#fcd5ce"/>
-                    <!-- Modern Hair -->
-                    <path d="M45 90 C 40 40, 160 40, 155 90 C 140 30, 60 30, 45 90 Z" fill="#2d00f7"/>
-                    <!-- Modern Headphones -->
-                    <path d="M30 100 A 70 70 0 0 1 170 100" stroke="#f72585" stroke-width="12" fill="none" stroke-linecap="round"/>
-                    <rect x="22" y="85" width="16" height="30" rx="8" fill="#4cc9f0"/>
-                    <rect x="162" y="85" width="16" height="30" rx="8" fill="#4cc9f0"/>
-                    <!-- Big Expressive Pixar Eyes -->
-                    <ellipse class="eye" cx="78" cy="95" rx="12" ry="15" fill="#ffffff"/>
-                    <ellipse class="eye" cx="122" cy="95" rx="12" ry="15" fill="#ffffff"/>
-                    <circle cx="80" cy="95" r="7" fill="#1b1b1e"/>
-                    <circle cx="120" cy="95" r="7" fill="#1b1b1e"/>
-                    <circle cx="82" cy="92" r="2.5" fill="#ffffff"/>
-                    <circle cx="122" cy="92" r="2.5" fill="#ffffff"/>
-                    <!-- Eyebrows -->
-                    <path id="left-brow" d="M68 75 Q 78 70 88 75" stroke="#2d00f7" stroke-width="4" fill="none" stroke-linecap="round"/>
-                    <path id="right-brow" d="M112 75 Q 122 70 132 75" stroke="#2d00f7" stroke-width="4" fill="none" stroke-linecap="round"/>
-                    <!-- Mouth -->
-                    <path id="avatar-mouth" d="M80 125 Q 100 145 120 125" stroke="#d90429" stroke-width="5" fill="none" stroke-linecap="round"/>
-                    <!-- Modern Hoodie Collar -->
-                    <path d="M50 160 Q 100 200 150 160 L 165 200 L 35 200 Z" fill="#4361ee"/>
+            <!-- Visual Adventure Map Canvas/Grid -->
+            <div class="adventure-map">
+                <svg class="map-connections" viewBox="0 0 1000 300" preserveAspectRatio="none">
+                    <path d="M 150 150 Q 300 50, 400 150 T 650 150 T 880 150" fill="none" stroke="#f59e0b" stroke-width="6" stroke-dasharray="10 10" class="animated-path"/>
                 </svg>
-            </div>
-            <div class="speech-container">
-                <div class="character-info">
-                    <span class="char-name" id="char-name">آرش (مدیر کارآفرین جوان)</span>
-                    <button class="voice-toggle-btn" onclick="toggleVoiceMute()">
-                        <span id="voice-icon">🔊</span> راهنمای صوتی
-                    </button>
-                </div>
-                <div class="speech-bubble" id="speech-bubble">
-                    سلام! من آرش هستم. خوش اومدی به شبیه‌ساز اقتصادی! در این فصل باید خط تولید بستنی و آبمیوه رو روی منحنی مرز امکانات تولید (PPF) طوری تنظیم کنی که به حداکثر کارایی برسی!
-                </div>
-            </div>
-        </section>
 
-        <!-- CHAPTER 1: PPF & OPPORTUNITY COST -->
-        <main id="chapter-1" class="chapter-content active">
-            <div class="grid-2">
-                <div class="card panel-controls">
-                    <h3>⚙️ کارگاه تولید بستنی و آبمیوه (درس ۴)</h3>
-                    <p class="desc">تخصیص منابع محدود روی منحنی مرز امکانات تولید (PPF):</p>
-                    
-                    <div class="input-group">
-                        <label>🍨 میزان تولید بستنی: <span id="val-icecream" class="val-highlight">50</span> واحد</label>
-                        <input type="range" id="slider-icecream" min="0" max="100" value="50" oninput="updatePPF()">
-                    </div>
-
-                    <div class="input-group">
-                        <label>🥤 میزان تولید آبمیوه: <span id="val-juice" class="val-highlight">50</span> واحد</label>
-                        <input type="range" id="slider-juice" min="0" max="100" value="50" oninput="updatePPF()">
-                    </div>
-
-                    <div class="tech-upgrade-box">
-                        <button class="btn-primary" onclick="upgradeTechnology()">
-                            🚀 ارتقای فناوری و دستیابی به منابع جدید (انتقال مرز به راست)
-                        </button>
-                    </div>
-
-                    <div class="status-box" id="ppf-status-box">
-                        <div class="status-title">وضعیت تولید: <span id="ppf-status-text">نامشخص</span></div>
-                        <div class="status-detail" id="ppf-detail-text">--</div>
-                    </div>
-                </div>
-
-                <div class="card panel-chart">
-                    <h3>📊 منحنی مرز امکانات تولید (PPF)</h3>
-                    <canvas id="ppfCanvas" width="400" height="320"></canvas>
-                    <div class="legend-box">
-                        <span class="leg-item"><span class="dot green"></span> روی مرز (کارا)</span>
-                        <span class="leg-item"><span class="dot orange"></span> داخل مرز (ناکارا / اتلاف منابع)</span>
-                        <span class="leg-item"><span class="dot red"></span> خارج مرز (غیرقابل دستیابی)</span>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <!-- CHAPTER 2: MARKET EQUILIBRIUM & GOVERNMENT -->
-        <main id="chapter-2" class="chapter-content">
-            <div class="grid-2">
-                <div class="card panel-controls">
-                    <h3>🛍️ بازار کالا، تعادل و نقش دولت (درس ۵ و ۶)</h3>
-                    <p class="desc">تنظیم قیمت تعادلی بر اساس عرضه و تقاضا و اخذ مالیات جهت کالای عمومی:</p>
-
-                    <div class="input-group">
-                        <label>🏷️ قیمت پیشنهادی کالا: <span id="val-price" class="val-highlight">25,000</span> تومان</label>
-                        <input type="range" id="slider-price" min="5000" max="50000" step="1000" value="25000" oninput="updateMarket()">
-                    </div>
-
-                    <div class="input-group">
-                        <label>🏛️ نرخ مالیات دولت: <span id="val-tax" class="val-highlight">10</span> درصد</label>
-                        <input type="range" id="slider-tax" min="0" max="30" value="10" oninput="updateMarket()">
-                    </div>
-
-                    <div class="market-metrics">
-                        <div class="metric-card">
-                            <small>میزان تقاضای خریداران</small>
-                            <strong id="m-demand">500</strong>
-                        </div>
-                        <div class="metric-card">
-                            <small>میزان عرضه فروشندگان</small>
-                            <strong id="m-supply">500</strong>
+                <div class="map-nodes">
+                    <!-- Node 1 -->
+                    <div class="map-node unlocked" id="node-1" onclick="startLevel(1)">
+                        <div class="node-icon">🏝️</div>
+                        <div class="node-info">
+                            <span class="level-num">مرحله ۱</span>
+                            <h3>جزیره کارآفرینی</h3>
+                            <span class="lesson-tag">درس ۴: مرز امکانات</span>
+                            <div class="stars-display" id="stars-lvl-1">☆☆☆</div>
                         </div>
                     </div>
 
-                    <div class="status-box" id="market-status-box">
-                        <div class="status-title">وضعیت بازار: <span id="market-status-text">تعادل بازار</span></div>
-                        <div class="status-detail" id="market-detail-text">عرضه و تقاضا برابر است و هیچ کمبود یا مازادی وجود ندارد.</div>
+                    <!-- Node 2 -->
+                    <div class="map-node locked" id="node-2" onclick="startLevel(2)">
+                        <div class="node-icon">🏛️</div>
+                        <div class="node-info">
+                            <span class="level-num">مرحله ۲</span>
+                            <h3>شهر بازار & دولت</h3>
+                            <span class="lesson-tag">درس ۵ و ۶: تعادل & مالیات</span>
+                            <div class="stars-display" id="stars-lvl-2">☆☆☆</div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="card panel-chart">
-                    <h3>📈 نمودار تعادل عرضه و تقاضا</h3>
-                    <canvas id="marketCanvas" width="400" height="320"></canvas>
+                    <!-- Node 3 -->
+                    <div class="map-node locked" id="node-3" onclick="startLevel(3)">
+                        <div class="node-icon">🏙️</div>
+                        <div class="node-info">
+                            <span class="level-num">مرحله ۳</span>
+                            <h3>پایتخت اقتصاد کلان</h3>
+                            <span class="lesson-tag">درس ۸ تا ۱۱: تورم & GDP</span>
+                            <div class="stars-display" id="stars-lvl-3">☆☆☆</div>
+                        </div>
+                    </div>
+
+                    <!-- Node 4 -->
+                    <div class="map-node locked" id="node-4" onclick="startLevel(4)">
+                        <div class="node-icon">🏰</div>
+                        <div class="node-info">
+                            <span class="level-num">مرحله ۴</span>
+                            <h3>قلعه بورس & دارایی</h3>
+                            <span class="lesson-tag">درس ۱۲ تا ۱۴: پس‌انداز</span>
+                            <div class="stars-display" id="stars-lvl-4">☆☆☆</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </main>
 
-        <!-- CHAPTER 3: MACROECONOMICS & INFLATION -->
-        <main id="chapter-3" class="chapter-content">
-            <div class="grid-2">
-                <div class="card panel-controls">
-                    <h3>🌐 مدیریت کلان، mهار تورم و GDP (درس ۸ تا ۱۱)</h3>
-                    <p class="desc">تنظیم سیاست‌های پولی، محاسبه تولید خالص و تاب‌آوری دانش‌بنیان:</p>
-
-                    <div class="input-group">
-                        <label>🔥 نرخ تورم سالانه: <span id="val-inflation" class="val-highlight">30</span>٪</label>
-                        <input type="range" id="slider-inflation" min="5" max="60" value="30" oninput="updateMacro()">
-                    </div>
-
-                    <div class="input-group">
-                        <label>💡 سرمایه‌گذاری در دانش‌بنیان: <span id="val-tech-invest" class="val-highlight">40</span>٪</label>
-                        <input type="range" id="slider-tech-invest" min="0" max="100" value="40" oninput="updateMacro()">
-                    </div>
-
-                    <div class="input-group">
-                        <label>🚜 هزینه استهلاک تجهیزات: <span id="val-depr" class="val-highlight">15</span> میلیارد تومان</label>
-                        <input type="range" id="slider-depr" min="0" max="50" value="15" oninput="updateMacro()">
-                    </div>
-
-                    <div class="macro-calc-card">
-                        <div><strong>تولید ناخالص داخلی (GDP):</strong> <span id="gdp-nominal">1,200</span> میلیارد تومان</div>
-                        <div><strong>تولید خالص داخلی (NDP):</strong> <span id="gdp-net">1,185</span> میلیارد تومان</div>
-                        <div><strong>تولید واقعی (Real GDP):</strong> <span id="gdp-real">923</span> میلیارد تومان</div>
-                    </div>
-                </div>
-
-                <div class="card panel-chart">
-                    <h3>📊 شاخص تاب‌آوری و دهک‌های درآمدی</h3>
-                    <canvas id="macroCanvas" width="400" height="320"></canvas>
-                </div>
+            <div class="map-footer-actions">
+                <button class="btn-cert-preview" onclick="showCertificateIfReady()">📜 مشاهده گواهی‌نامه پیروزی</button>
             </div>
-        </main>
-
-        <!-- CHAPTER 4: PERSONAL FINANCE & ASSETS -->
-        <main id="chapter-4" class="chapter-content">
-            <div class="grid-2">
-                <div class="card panel-controls">
-                    <h3>🪙 مدیریت مالی شخصی، طلا و سرمایه‌گذاری (درس ۱۲-۱۴)</h3>
-                    <p class="desc">سبد دارایی خود را طوری بچینید که ارزش پول در برابر تورم حفظ شود:</p>
-
-                    <div class="input-group">
-                        <label>🥇 طلا و سکه: <span id="val-gold" class="val-highlight">40</span>٪</label>
-                        <input type="range" id="slider-gold" min="0" max="100" value="40" oninput="updateAssets('gold')">
-                    </div>
-
-                    <div class="input-group">
-                        <label>📈 بورس و شرکت‌ها: <span id="val-stocks" class="val-highlight">30</span>٪</label>
-                        <input type="range" id="slider-stocks" min="0" max="100" value="30" oninput="updateAssets('stocks')">
-                    </div>
-
-                    <div class="input-group">
-                        <label>🏦 سپرده بانکی: <span id="val-bank" class="val-highlight">20</span>٪</label>
-                        <input type="range" id="slider-bank" min="0" max="100" value="20" oninput="updateAssets('bank')">
-                    </div>
-
-                    <div class="input-group">
-                        <label>🛡️ بیمه و پس‌انداز: <span id="val-insurance" class="val-highlight">10</span>٪</label>
-                        <input type="range" id="slider-insurance" min="0" max="100" value="10" oninput="updateAssets('insurance')">
-                    </div>
-
-                    <button class="btn-success" onclick="generateFinalReport()">
-                        🏆 دریافت کارنامه و گواهینامه ارشد اقتصاد
-                    </button>
-                </div>
-
-                <div class="card panel-chart">
-                    <h3>🎨 نمودار ترکیبی سبد دارایی و حفظ قدرت خرید</h3>
-                    <canvas id="assetCanvas" width="400" height="320"></canvas>
-                </div>
-            </div>
-        </main>
-
-
-        <div id="quizModal" class="quiz-overlay" role="dialog" aria-modal="true" aria-labelledby="quiz-title">
-          <div class="quiz-card"><button class="close-modal" onclick="closeMissionQuiz()" aria-label="بستن">×</button><span class="eyebrow">چالش دانشی</span><h2 id="quiz-title">آماده‌ای؟</h2><p id="quiz-question"></p><div id="quiz-options" class="quiz-options"></div><p id="quiz-feedback" class="quiz-feedback" aria-live="polite"></p><button id="quiz-next" class="btn-primary" onclick="nextQuizQuestion()" hidden>سؤال بعدی</button></div>
         </div>
 
-        <!-- Modal Certificate -->
-        <div id="certModal" class="modal-overlay">
-            <div class="modal-content">
-                <button class="close-modal" onclick="closeModal()">×</button>
-                <div class="certificate-card">
-                    <div class="cert-header">
-                        <h2>🏛️ گواهی‌نامه شایستگی تحلیل‌گری اقتصادی</h2>
-                        <span class="cert-subtitle">دبیرخانه کشوری درس اقتصاد آموزش و پرورش</span>
-                    </div>
-                    <div class="cert-body">
-                        <p>این گواهی‌نامه تأیید می‌کند که دانش‌آموز عزیز با موفقیت شبیه‌ساز ۴ مرحله‌ای اقتصاد را به پایان رسانده و مفاهیم <strong>مرز امکانات تولید، تعادل بازار، مهار تورم و مدیریت سبد دارایی</strong> را فرا گرفته است.</p>
-                        
-                        <div class="cert-score-box">
-                            <div>امتیاز کل تحلیلی: <strong id="cert-score">95 / 100</strong></div>
-                            <div>رتبه اقتصادی: <strong id="cert-rank">وزیر اقتصاد هوشمند 👑</strong></div>
+        <!-- LEVEL QUEST MODAL / SCREEN -->
+        <div id="quest-screen" class="view-screen">
+            <div class="quest-container">
+                <button class="back-map-btn" onclick="showMapView()">⬅️ بازگشت به نقشه مراحل</button>
+                
+                <div class="quest-card">
+                    <!-- Character Quest Banner -->
+                    <div class="quest-banner">
+                        <div class="avatar-box">
+                            <span class="avatar-emoji" id="quest-avatar">👨‍💼</span>
                         </div>
+                        <div class="quest-intro">
+                            <span class="badge-lvl" id="quest-lvl-badge">مرحله ۱</span>
+                            <h2 id="quest-title">عنوان مأموریت</h2>
+                            <p id="quest-narrator">توضیحات راوی...</p>
+                        </div>
+                    </div>
 
-                        <div class="cert-signatures">
-                            <div class="sig-block">
-                                <div class="sig-line">طراح و توسعه‌دهنده بازی</div>
-                                <strong class="sig-name">مرضیه صفرعلی</strong>
+                    <!-- Interactive Dialogue Bubble -->
+                    <div class="speech-bubble">
+                        <strong id="char-name">آرش (کارآفرین):</strong>
+                        <p id="char-dialogue">سلام! به کارگاه ما خوش آمدید...</p>
+                    </div>
+
+                    <!-- Interactive Challenge Area -->
+                    <div class="challenge-body" id="challenge-area">
+                        <!-- Dynamic content injected by JS -->
+                    </div>
+
+                    <!-- Quest Actions & Feedback -->
+                    <div class="quest-footer">
+                        <div id="quest-feedback" class="feedback-box hidden"></div>
+                        <button id="next-quest-btn" class="btn-primary" onclick="nextQuestStep()">پاسخ و ثبت تصمیم 🚀</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VICTORY & CERTIFICATE MODAL -->
+        <div id="victory-modal" class="modal-overlay hidden">
+            <div class="modal-card">
+                <div class="victory-header">
+                    <span class="trophy-icon">🏆</span>
+                    <h2>پیروزی بزرگ! شما قهرمان اقتصاد شدید!</h2>
+                    <p>تمام مراحل و معماهای اقتصاد دهم را با موفقیت فتح کردید.</p>
+                </div>
+
+                <div class="certificate-box" id="certificate">
+                    <div class="cert-border">
+                        <div class="cert-header">
+                            <span class="cert-emblem">🏛️</span>
+                            <h3>گواهی‌نامه شایستگی و مهارتی اقتصاد</h3>
+                            <span class="cert-sub">دبیرخانه کشوری آموزش اقتصاد</span>
+                        </div>
+                        <div class="cert-body">
+                            <p>بدین‌وسیله گواهی می‌شود دانش‌آموز عزیز با موفقیت کامل تمامی مراحل سناریومحور و معماهای کاربردی کتاب اقتصاد پایه دهم را به پایان رسانده است.</p>
+                            <div class="cert-details">
+                                <div class="detail-item">
+                                    <span>امتیاز کل کسب‌شده:</span>
+                                    <strong id="final-cert-score">1000 / 1000</strong>
+                                </div>
+                                <div class="detail-item">
+                                    <span>مدال افتخار:</span>
+                                    <strong>🥇 استاد کلان مدیریت اقتصادی</strong>
+                                </div>
+                            </div>
+                            <div class="cert-slogan">
+                                ✨ «اقتصاد را فقط تدریس نکنیم؛ اندیشیدن اقتصادی را زندگی کنیم.» ✨
+                            </div>
+                        </div>
+                        <div class="cert-footer">
+                            <div class="sign-block">
+                                <span>طراح و توسعه‌دهنده اثر:</span>
+                                <strong>مرضیه صفرعلی</strong>
                                 <small>عضو دبیرخانه کشوری اقتصاد</small>
                             </div>
-                            <div class="sig-block">
-                                <div class="sig-line">تأییدیه دبیرخانه کشوری</div>
-                                <strong class="sig-name">ارزیابی محتوایی و آموزشی</strong>
-                                <small>طرح الگو و شبیه‌ساز برتر</small>
+                            <div class="seal-mark">
+                                🎖️ تاییدشده
                             </div>
                         </div>
                     </div>
-                    <button class="btn-primary" onclick="window.print()">🖨️ چاپ یا ذخیره کارنامه (PDF)</button>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-print" onclick="window.print()">🖨️ چاپ / ذخیره گواهی‌نامه PDF</button>
+                    <button class="btn-secondary" onclick="closeVictoryModal()">بستن و ادامه</button>
                 </div>
             </div>
         </div>
-
     </div>
 
-    <footer class="app-footer">
-        <p>طراحی شده با عشق جهت ارتقای سواد اقتصادی دانش‌آموزان ایران اسلامی | <strong>مرضیه صفرعلی</strong> ✨</p>
-    </footer>
-
+    <!-- Web Audio Elements for Game SFX -->
     <script src="script.js"></script>
 </body>
 </html>
