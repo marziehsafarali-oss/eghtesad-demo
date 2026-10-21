@@ -1,103 +1,150 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#102a43">
-<title>ماجراجویی در سرزمین اقتصاد</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شهر اقتصادی من | مدیریت و کارخانه‌داری تصویری</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-<header class="topbar">
-  <div class="brand"><span class="brand-icon">🧭</span><div><strong>سرزمین اقتصاد</strong><small>ماجراجویی بزرگ اقتصاد دهم</small></div></div>
-  <div class="stats">
-    <div class="stat"><span>⭐ تجربه</span><b id="xp">۰</b></div>
-    <div class="stat"><span>🪙 سرمایه</span><b id="money">۱۰۰</b></div>
-    <div class="stat"><span>🏅 نشان‌ها</span><b id="badges">۰</b></div>
-  </div>
-</header>
+    <div id="game-app">
+        <!-- Top Status Bar -->
+        <header class="top-bar">
+            <div class="city-title">
+                <span class="icon">🏰</span>
+                <div>
+                    <h1>شهر اقتصادی من</h1>
+                    <span class="designer-tag">طراح: مرضیه صفرعلی (دبیرخانه اقتصاد)</span>
+                </div>
+            </div>
+            
+            <div class="stats-container">
+                <div class="stat-box gold">
+                    <span class="stat-icon">🪙</span>
+                    <div class="stat-info">
+                        <span class="label">خزانه شهر:</span>
+                        <span id="gold-val" class="val">1,000,000</span> <small>تومان</small>
+                    </div>
+                </div>
 
-<main class="shell">
-  <section class="hero">
-    <div class="hero-copy">
-      <div class="eyebrow">یک بازی داستانی ـ مدیریتی، نه آزمون چندگزینه‌ای</div>
-      <h1>اقتصاد را <span>زندگی کن!</span></h1>
-      <p>به شهری وارد شده‌ای که برای رشد به تصمیم‌های اقتصادی تو نیاز دارد. منابع محدودند، مردم انتخاب می‌کنند و هر تصمیم پیامد خودش را دارد.</p>
-      <div class="hero-actions"><button class="primary" id="startBtn">🚀 شروع ماجراجویی</button><button class="secondary" id="voiceBtn">🔊 راهنمای صوتی: خاموش</button></div>
-      <p class="voice-note">راهنمای صوتی در صورت پشتیبانی مرورگر، با صدای فارسی ایران (fa-IR) پخش می‌شود.</p>
-    </div>
-    <div class="hero-art" aria-hidden="true"><div class="sun"></div><div class="cloud c1"></div><div class="cloud c2"></div><div class="mountain m1"></div><div class="mountain m2"></div><div class="town">🏘️</div><div class="road"></div><div class="character">🧑🏻‍💼</div><div class="coin coin1">🪙</div><div class="coin coin2">🌱</div></div>
-  </section>
+                <div class="stat-box morale">
+                    <span class="stat-icon">😊</span>
+                    <div class="stat-info">
+                        <span class="label">رضایت مردم:</span>
+                        <span id="morale-val" class="val">85%</span>
+                    </div>
+                </div>
 
-  <section class="dashboard">
-    <div class="panel map-panel">
-      <div class="section-heading"><div><span class="eyebrow">نقشه پیشرفت</span><h2>مسیر ساختن یک شهر آباد</h2></div><span class="pill" id="progressLabel">مرحله ۱ از ۶</span></div>
-      <div class="map-path" id="mapPath">
-        <button class="map-node active" data-stage="0"><span>🌱</span><b>دهکده آغاز</b><small>نیاز و انتخاب</small></button>
-        <i class="path-line"></i>
-        <button class="map-node locked" data-stage="1"><span>🛠️</span><b>کارگاه تولید</b><small>منابع و تولید</small></button>
-        <i class="path-line"></i>
-        <button class="map-node locked" data-stage="2"><span>🛒</span><b>بازار شهر</b><small>عرضه و تقاضا</small></button>
-        <i class="path-line"></i>
-        <button class="map-node locked" data-stage="3"><span>🏦</span><b>شهر پولی</b><small>پول و پس‌انداز</small></button>
-        <i class="path-line"></i>
-        <button class="map-node locked" data-stage="4"><span>🚚</span><b>راه بازرگانی</b><small>تجارت و انتخاب</small></button>
-        <i class="path-line"></i>
-        <button class="map-node locked" data-stage="5"><span>🏙️</span><b>شهر پایدار</b><small>تصمیم نهایی</small></button>
-      </div>
-      <div class="map-foot"><span>🔒 هر منطقه با انجام مأموریت قبلی آزاد می‌شود.</span><span id="savedLabel">پیشرفت روی همین دستگاه ذخیره می‌شود.</span></div>
+                <div class="stat-box infra">
+                    <span class="stat-icon">🛣️</span>
+                    <div class="stat-info">
+                        <span class="label">زیرساخت شهر:</span>
+                        <span id="infra-val" class="val">متوسط</span>
+                    </div>
+                </div>
+
+                <button id="sfx-toggle" onclick="toggleAudio()" class="btn-icon">🔊 صدا: فعال</button>
+            </div>
+        </header>
+
+        <!-- Slogan -->
+        <div class="banner-slogan">
+            ✨ «اقتصاد را فقط تدریس نکنیم؛ اندیشیدن اقتصادی را زندگی کنیم.» ✨
+        </div>
+
+        <!-- Main Tycoon Map Area -->
+        <main class="game-viewport">
+            <!-- Interactive Visual Map (Town Grid) -->
+            <div class="visual-map">
+                <div class="map-header">
+                    <h2>🗺️ نقشه شهر و بخش‌های اقتصادی (روی ساختمان‌ها کلیک کنید)</h2>
+                    <p>مدیریت کارخانه، تنظیم بازار، توسعه شهر و سرمایه‌گذاری را مستقیماً مدیریت کنید!</p>
+                </div>
+
+                <div class="building-grid">
+                    <!-- Building 1: Factory -->
+                    <div class="building-card factory" onclick="openBuilding('factory')">
+                        <div class="badge">درس ۴</div>
+                        <div class="building-img">🏭</div>
+                        <h3>کارخانه بستنی و آبمیوه</h3>
+                        <p class="desc">تخصیص نیروی کار، تکنولوژی دانش‌بنیان و افزایش کارایی تولید</p>
+                        <div class="status-indicator">وضعیت: <strong id="factory-status">تولید عادی</strong></div>
+                        <button class="btn-action">ورود به کارخانه ➔</button>
+                    </div>
+
+                    <!-- Building 2: Market -->
+                    <div class="building-card market" onclick="openBuilding('market')">
+                        <div class="badge">درس ۵</div>
+                        <div class="building-img">🛒</div>
+                        <h3>بازار مرکزی شهر</h3>
+                        <p class="desc">قیمت‌گذاری محصولات، تعادل عرضه و تقاضا و جلب رضایت مشتریان</p>
+                        <div class="status-indicator">وضعیت: <strong id="market-status">بازار متعادل</strong></div>
+                        <button class="btn-action">مدیریت بازار ➔</button>
+                    </div>
+
+                    <!-- Building 3: City Hall -->
+                    <div class="building-card cityhall" onclick="openBuilding('cityhall')">
+                        <div class="badge">درس ۶</div>
+                        <div class="building-img">🏛️</div>
+                        <h3>شهرداری و دولت</h3>
+                        <p class="desc">پرداخت مالیات، احداث جاده، تامین امنیت و خدمات عمومی</p>
+                        <div class="status-indicator">وضعیت: <strong id="cityhall-status">زیرساخت معمولی</strong></div>
+                        <button class="btn-action">مدیریت خدمات ➔</button>
+                    </div>
+
+                    <!-- Building 4: Financial Center -->
+                    <div class="building-card finance" onclick="openBuilding('finance')">
+                        <div class="badge">درس ۱۴</div>
+                        <div class="building-img">🪙</div>
+                        <h3>مرکز مالی و بورس</h3>
+                        <p class="desc">سرمایه‌گذاری در طلا، بورس و بانک برای حفظ ارزش دارایی در برابر تورم</p>
+                        <div class="status-indicator">وضعیت: <strong id="finance-status">سبد دارایی فعال</strong></div>
+                        <button class="btn-action">مدیریت سرمایه ➔</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Window for Interactive Management -->
+            <div id="modal-overlay" class="modal-overlay hidden">
+                <div class="modal-card">
+                    <button class="close-btn" onclick="closeModal()">✕</button>
+                    <div id="modal-content"></div>
+                </div>
+            </div>
+
+            <!-- Victory Celebration Modal -->
+            <div id="victory-modal" class="modal-overlay hidden">
+                <div class="modal-card victory-card">
+                    <div class="victory-header">
+                        <span class="victory-icon">🏆</span>
+                        <h2>پیروزی بزرگ! شما شهر را به شکوفایی رساندید!</h2>
+                        <p>مدیریت عالی هوشمندانه شما باعث ارتقای کامل تولید، رضایت شهروندان و توسعه پایداری شهر شد.</p>
+                    </div>
+
+                    <div class="certificate-box">
+                        <div class="cert-border">
+                            <h3>📜 گواهی‌نامه شایستگی مدیریت اقتصادی</h3>
+                            <p class="cert-text">بدین‌وسیله گواهی می‌شود دانش‌آموز با موفقیت تمام مراحل مدیریت تولید، تعادل بازار، خدمات عمومی و حفظ ارزش دارایی را با افتخار به پایان رساند.</p>
+                            <div class="cert-footer">
+                                <div class="sign-block">
+                                    <small>طراح و توسعه‌دهنده آموزشی:</small>
+                                    <strong>مرضیه صفرعلی</strong>
+                                    <small>عضو دبیرخانه کشوری اقتصاد</small>
+                                </div>
+                                <div class="slogan-sign">
+                                    «اقتصاد را فقط تدریس نکنیم؛ اندیشیدن اقتصادی را زندگی کنیم.» ✨
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-gold" onclick="location.reload()">🎮 شروع مجدد بازی</button>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <div class="panel mission-panel">
-      <div class="section-heading"><div><span class="eyebrow">مأموریت فعال</span><h2 id="missionTitle">دهکده آغاز</h2></div><span class="mission-icon" id="missionIcon">🌱</span></div>
-      <p id="missionStory" class="story">به دهکده سبز خوش آمدی! خانواده‌ها نیازهای زیادی دارند، اما وقت و منابع محدود است. اولین تصمیم تو مشخص می‌کند دهکده از کجا شروع کند.</p>
-      <div class="concept" id="conceptBox"><b>💡 مفهوم اقتصادی</b><p id="conceptText">کمیابی یعنی منابع برای برآوردن همه خواسته‌ها کافی نیستند؛ بنابراین باید انتخاب کنیم.</p></div>
-      <div class="choice-list" id="choices"></div>
-      <div class="feedback" id="feedback" aria-live="polite" hidden></div>
-      <div class="mission-footer"><span id="missionStatus">یک تصمیم بگیر تا مسیرت آغاز شود.</span><button id="nextBtn" class="primary" disabled>رفتن به منطقه بعد ←</button></div>
-    </div>
-  </section>
-
-  <section class="panel market-panel">
-    <div class="section-heading"><div><span class="eyebrow">کارگاه تصمیم‌گیری</span><h2>بازار کوچک شهر</h2><p class="muted">قیمت و میزان تولید را تنظیم کن و پیامد تصمیم را ببین.</p></div><span class="market-badge">شبیه‌سازی زنده</span></div>
-    <div class="market-grid">
-      <div class="market-controls">
-        <label for="priceRange">قیمت نان <strong><span id="priceValue">۲۰</span> سکه</strong></label>
-        <input id="priceRange" type="range" min="5" max="50" value="20">
-        <div class="range-labels"><span>ارزان</span><span>گران</span></div>
-        <label for="produceRange">تعداد نان تولیدشده <strong><span id="produceValue">۳۰</span> عدد</strong></label>
-        <input id="produceRange" type="range" min="5" max="60" value="30">
-        <div class="range-labels"><span>کم</span><span>زیاد</span></div>
-        <button id="marketBtn" class="primary wide">📦 بررسی نتیجه تصمیم</button>
-      </div>
-      <div class="market-result">
-        <div class="result-stat"><span>👥 تقاضای تقریبی</span><b id="demandValue">۳۶ عدد</b></div>
-        <div class="result-stat"><span>🧺 فروش احتمالی</span><b id="soldValue">۳۰ عدد</b></div>
-        <div class="result-stat"><span>💰 درآمد فروش</span><b id="revenueValue">۶۰۰ سکه</b></div>
-        <div class="result-stat"><span>📉 وضعیت بازار</span><b id="marketStatus">بازار متعادل</b></div>
-        <div class="meter"><div id="marketMeter"></div></div>
-        <p id="marketExplanation" class="result-explanation">با تغییر قیمت و تولید، نتیجه بازار را بررسی کن.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="bottom-grid">
-    <div class="panel inventory">
-      <div class="section-heading"><div><span class="eyebrow">منابع شهر</span><h2>انبار و دارایی‌ها</h2></div>📦</div>
-      <div class="resource-row"><span>🌾 مواد اولیه</span><div class="resource-bar"><i id="rawBar" style="width:60%"></i></div><b id="rawValue">۶۰</b></div>
-      <div class="resource-row"><span>👷 نیروی کار</span><div class="resource-bar"><i id="workBar" style="width:50%"></i></div><b id="workValue">۵۰</b></div>
-      <div class="resource-row"><span>😊 رضایت مردم</span><div class="resource-bar"><i id="happyBar" style="width:55%"></i></div><b id="happyValue">۵۵٪</b></div>
-      <p class="muted tiny">تصمیم‌ها می‌توانند منابع و رضایت مردم را تغییر دهند.</p>
-    </div>
-    <div class="panel journal">
-      <div class="section-heading"><div><span class="eyebrow">دفتر ماجراجویی</span><h2>اتفاق‌های شهر</h2></div>📜</div>
-      <ul id="journalList"><li>ماجراجویی آماده شروع است. اولین تصمیم را انتخاب کن.</li></ul>
-      <button class="text-button" id="resetBtn">شروع دوباره از ابتدا</button>
-    </div>
-  </section>
-  <footer>ساخته‌شده برای یادگیری فعال اقتصاد دهم • نسخه آموزشی قابل توسعه</footer>
-</main>
-<div class="toast" id="toast" role="status"></div>
-<script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
