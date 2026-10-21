@@ -1,303 +1,68 @@
-// Adventure Game Logic & Level Quests
-let playerScore = 0;
-let unlockedLevel = 1;
-let levelStars = { 1: 0, 2: 0, 3: 0, 4: 0 };
-let currentActiveLevel = 1;
-let currentQuestStepIndex = 0;
-let selectedOptionIndex = null;
-
-// Sound Effects Engine
-function playSFX(type) {
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-
-    if (type === 'coin') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(987.77, audioCtx.currentTime); // B5
-        osc.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.08); // E6
-        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.3);
-    } else if (type === 'victory') {
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15); // E5
-        osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.30); // G5
-        osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.45); // C6
-        gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.8);
-    } else if (type === 'wrong') {
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(200, audioCtx.currentTime);
-        osc.frequency.setValueAtTime(150, audioCtx.currentTime + 0.15);
-        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.3);
-    }
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const fa = n => new Intl.NumberFormat("fa-IR").format(Math.round(n));
+const stages = [
+ {title:"دهکده آغاز",icon:"🌱",story:"به دهکده سبز خوش آمدی! خانواده‌ها نیازهای زیادی دارند، اما وقت و منابع محدود است. اولین تصمیم تو مشخص می‌کند دهکده از کجا شروع کند.",concept:"کمیابی یعنی منابع برای برآوردن همه خواسته‌ها کافی نیستند؛ بنابراین باید انتخاب کنیم.",choices:[
+  {icon:"🌾",title:"کاشت گندم برای تأمین غذای مردم",desc:"نیاز فوری مردم را در اولویت می‌گذاری.",why:"انتخاب تو یک نیاز اساسی را پاسخ می‌دهد؛ اما منابعی که صرف گندم شده‌اند، دیگر برای کارهای دیگر در دسترس نیستند.",xp:15,money:10,raw:8,work:3,happy:10},
+  {icon:"🛤️",title:"ساخت جاده برای آینده دهکده",desc:"بخشی از منابع را صرف زیرساخت می‌کنی.",why:"زیرساخت می‌تواند در آینده تولید و مبادله را آسان کند؛ بااین‌حال مردم هنوز به نیازهای روزمره هم احتیاج دارند.",xp:15,money:0,raw:-5,work:-4,happy:3},
+  {icon:"🧺",title:"برگزاری بازارچه محلی",desc:"مبادله کالاها را بین خانواده‌ها آسان می‌کنی.",why:"بازارچه امکان مبادله را فراهم می‌کند. تخصص و همکاری می‌توانند به استفاده بهتر از منابع کمک کنند.",xp:15,money:8,raw:0,work:2,happy:7}
+ ]},
+ {title:"کارگاه تولید",icon:"🛠️",story:"دهکده رشد کرده، اما مواد اولیه و نیروی کار محدودند. صاحب کارگاه از تو می‌خواهد تصمیم بگیری با منابع موجود چه چیزی تولید شود.",concept:"عوامل تولید مانند منابع طبیعی، نیروی کار، سرمایه و دانش برای تولید کالاها و خدمات به کار می‌روند.",choices:[
+  {icon:"👷",title:"آموزش نیروی کار",desc:"اکنون کمی زمان می‌گذاری تا بهره‌وری بالاتر برود.",why:"آموزش و دانش می‌توانند کیفیت کار و بهره‌وری را افزایش دهند؛ نتیجه آن ممکن است در بلندمدت آشکارتر شود.",xp:20,money:-8,raw:0,work:12,happy:5},
+  {icon:"⚙️",title:"خرید ابزار و تجهیزات",desc:"سرمایه‌گذاری برای تولید بیشتر.",why:"ابزار مناسب به تولید کمک می‌کند، ولی خرید آن هزینه دارد و باید با منابع و نیازهای تولید هماهنگ باشد.",xp:20,money:-12,raw:0,work:4,happy:2},
+  {icon:"🧵",title:"تولید کالای موردنیاز مردم",desc:"تولید را بر اساس نیازهای مشاهده‌شده تنظیم می‌کنی.",why:"توجه به نیاز و تقاضای مردم می‌تواند از هدررفت منابع جلوگیری کند؛ تولید بی‌برنامه ممکن است کالاهای فروش‌نرفته ایجاد کند.",xp:20,money:12,raw:-8,work:-4,happy:8}
+ ]},
+ {title:"بازار شهر",icon:"🛒",story:"مغازه‌دارها از تغییر قیمت‌ها می‌گویند. مردم وقتی قیمت نان بالا می‌رود، مقدار کمتری می‌خرند؛ تولیدکنندگان هم به قیمت و هزینه‌ها توجه می‌کنند.",concept:"تقاضا به تمایل و توانایی خرید مربوط است؛ عرضه نیز به مقدار کالایی مربوط می‌شود که تولیدکنندگان حاضرند عرضه کنند.",choices:[
+  {icon:"⚖️",title:"بررسی قیمت و هزینه تولید",desc:"قبل از تصمیم، اطلاعات بازار را جمع می‌کنی.",why:"اطلاعات بهتر کمک می‌کند تصمیم بر پایه هزینه‌ها و رفتار خریداران باشد، نه حدس و شتاب‌زدگی.",xp:25,money:8,raw:0,work:1,happy:5},
+  {icon:"🏷️",title:"کاهش قیمت برای افزایش خرید",desc:"می‌خواهی کالای بیشتری برای مردم قابل‌دسترس باشد.",why:"قیمت پایین‌تر ممکن است تقاضا را افزایش دهد، اما اگر هزینه تولید پوشش داده نشود، ادامه تولید دشوار می‌شود.",xp:25,money:-2,raw:2,work:0,happy:10},
+  {icon:"📦",title:"افزایش تولید با توجه به تقاضا",desc:"تولید را با نیاز بازار هماهنگ می‌کنی.",why:"تولید بیشتر وقتی مفید است که با تقاضای واقعی و منابع در دسترس هماهنگ باشد؛ وگرنه ممکن است مازاد کالا به وجود آید.",xp:25,money:10,raw:-8,work:-5,happy:4}
+ ]},
+ {title:"شهر پولی",icon:"🏦",story:"شهروندان درآمد دارند و باید درباره خرج‌کردن، پس‌انداز و سرمایه‌گذاری تصمیم بگیرند. خزانه‌دار شهر از تو برای برنامه‌ریزی منابع مالی کمک می‌خواهد.",concept:"پس‌انداز بخشی از درآمد است که مصرف نمی‌شود؛ سرمایه‌گذاری می‌تواند به ایجاد ظرفیت تولیدی کمک کند، هرچند با هزینه و ریسک همراه است.",choices:[
+  {icon:"🐖",title:"تشویق به پس‌انداز برای هدف مشخص",desc:"برای تعمیر پل شهر ذخیره مالی ایجاد می‌کنی.",why:"پس‌انداز می‌تواند منابع مالی لازم برای هدف‌های آینده را فراهم کند؛ هدف و برنامه روشن، تصمیم را معنادارتر می‌کند.",xp:25,money:18,raw:0,work:0,happy:2},
+  {icon:"🏭",title:"سرمایه‌گذاری در کارگاه تازه",desc:"بخشی از منابع مالی را به تولید اختصاص می‌دهی.",why:"سرمایه‌گذاری ممکن است ظرفیت تولید و فرصت‌های شغلی را بیشتر کند؛ انتخاب آن باید با نیاز و توان مالی شهر متناسب باشد.",xp:25,money:-15,raw:3,work:8,happy:5},
+  {icon:"🧾",title:"برنامه‌ریزی برای هزینه‌های ضروری",desc:"هزینه‌های مهم را از خریدهای کم‌اولویت جدا می‌کنی.",why:"بودجه‌بندی به مقایسه درآمد و هزینه و اولویت‌بندی نیازها کمک می‌کند.",xp:25,money:7,raw:0,work:0,happy:6}
+ ]},
+ {title:"راه بازرگانی",icon:"🚚",story:"شهر همۀ کالاهای موردنیازش را تولید نمی‌کند. شهرهای همسایه پیشنهاد مبادله داده‌اند. باید تصمیم بگیری چه چیزی را در داخل تولید کنید و چه چیزی را مبادله کنید.",concept:"تخصص و مبادله می‌توانند دسترسی به کالاها و استفاده از منابع را بهبود دهند؛ تصمیم تجاری باید هزینه‌ها و منافع را در نظر بگیرد.",choices:[
+  {icon:"🤝",title:"مبادله کالا با شهر همسایه",desc:"کالای مازاد شهر را با کالای موردنیاز عوض می‌کنی.",why:"مبادله می‌تواند نیازهایی را پاسخ دهد که تولید داخلی به‌تنهایی پاسخ‌گوی آن نیست؛ اعتماد و توافق منصفانه اهمیت دارند.",xp:30,money:12,raw:5,work:2,happy:8},
+  {icon:"🌽",title:"تمرکز بر کالایی که بهتر تولید می‌کنیم",desc:"منابع را در حوزه‌ای که توان بیشتری دارید متمرکز می‌کنی.",why:"تخصص می‌تواند بهره‌وری را بالا ببرد؛ بااین‌حال وابستگی بیش از حد به یک کالا هم ممکن است آسیب‌پذیری ایجاد کند.",xp:30,money:15,raw:-3,work:3,happy:4},
+  {icon:"🧰",title:"تولید همه‌چیز در داخل شهر",desc:"می‌خواهی برای کالاهای بیشتر به تولید داخلی تکیه کنی.",why:"تولید داخلی می‌تواند برخی وابستگی‌ها را کم کند، اما اگر منابع محدود باشند، تولید همه کالاها ممکن است پرهزینه‌تر شود.",xp:30,money:-5,raw:-10,work:-6,happy:2}
+ ]},
+ {title:"شهر پایدار",icon:"🏙️",story:"شهر بزرگ شده، اما بودجه، محیط‌زیست، اشتغال و رفاه مردم همگی مهم‌اند. شورای شهر از تو می‌خواهد برنامه‌ای انتخاب کنی که در بلندمدت به نفع جامعه باشد.",concept:"تصمیم اقتصادی خوب تنها به سود فوری توجه نمی‌کند؛ هزینه فرصت، پیامدهای اجتماعی و استفاده پایدار از منابع نیز مهم‌اند.",choices:[
+  {icon:"🌳",title:"سرمایه‌گذاری در حمل‌ونقل پاک",desc:"هزینه‌ای امروز، برای کاهش آلودگی و بهبود زندگی در آینده.",why:"این تصمیم می‌تواند منافع بلندمدت اجتماعی و زیست‌محیطی داشته باشد؛ در کنار آن باید هزینه اجرا و دسترسی مردم را هم سنجید.",xp:40,money:-10,raw:2,work:5,happy:12},
+  {icon:"🏥",title:"تقویت خدمات عمومی ضروری",desc:"منابع را به نیازهای مهم شهروندان اختصاص می‌دهی.",why:"خدمات عمومی می‌توانند کیفیت زندگی را بهبود دهند؛ تصمیم‌گیری نیازمند اولویت‌بندی و توجه به منابع محدود است.",xp:40,money:-8,raw:0,work:3,happy:14},
+  {icon:"📈",title:"حمایت از کسب‌وکارهای محلی",desc:"به ایجاد فرصت شغلی و فعالیت اقتصادی کمک می‌کنی.",why:"فعالیت کسب‌وکارها می‌تواند تولید و اشتغال را تقویت کند؛ حمایت مؤثر باید با نیازهای واقعی و پاسخ‌گویی همراه باشد.",xp:40,money:15,raw:-4,work:7,happy:7}
+ ]}
+];
+const initial = {stage:0,xp:0,money:100,badges:0,raw:60,work:50,happy:55,completed:[],voice:false,chosen:null};
+let state = {...initial};
+try { const saved=JSON.parse(localStorage.getItem("econAdventureSave")||"null"); if(saved && typeof saved.stage==="number") state={...initial,...saved}; } catch(e) {}
+let toastTimer;
+function save(){try{localStorage.setItem("econAdventureSave",JSON.stringify(state));$("savedLabel").textContent="پیشرفت ذخیره شد ✓";}catch(e){}}
+function clamp(n,min=0,max=100){return Math.max(min,Math.min(max,n));}
+function speak(text){if(!state.voice || !("speechSynthesis" in window))return; window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="fa-IR";u.rate=.9;u.pitch=1;const voices=window.speechSynthesis.getVoices();const faVoice=voices.find(v=>/^fa(-|_)?IR/i.test(v.lang)||(/persian|فارسی/i.test(v.name)));if(faVoice)u.voice=faVoice;window.speechSynthesis.speak(u);}
+function toast(msg){const el=$("toast");el.textContent=msg;el.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),2600);}
+function log(msg){const li=document.createElement("li");li.textContent=msg;$("journalList").prepend(li);while($("journalList").children.length>8)$("journalList").lastElementChild.remove();}
+function renderStats(){$("xp").textContent=fa(state.xp);$("money").textContent=fa(state.money);$("badges").textContent=fa(state.badges);$("rawValue").textContent=fa(state.raw);$("workValue").textContent=fa(state.work);$("happyValue").textContent=fa(state.happy)+"٪";$("rawBar").style.width=clamp(state.raw)+"%";$("workBar").style.width=clamp(state.work)+"%";$("happyBar").style.width=clamp(state.happy)+"%";}
+function renderMap(){document.querySelectorAll(".map-node").forEach((node,i)=>{node.classList.toggle("active",i===state.stage);node.classList.toggle("done",state.completed.includes(i));node.classList.toggle("locked",i>state.stage);node.disabled=i>state.stage;});$("progressLabel").textContent=`مرحله ${fa(state.stage+1)} از ${fa(stages.length)}`;}
+function renderStage(){const s=stages[state.stage];$("missionTitle").textContent=s.title;$("missionIcon").textContent=s.icon;$("missionStory").textContent=s.story;$("conceptText").textContent=s.concept;$("choices").innerHTML="";$("feedback").hidden=true;$("nextBtn").disabled=!state.completed.includes(state.stage);$("missionStatus").textContent=state.completed.includes(state.stage)?"این مأموریت انجام شده است.":"یکی از راهبردها را انتخاب کن؛ اینجا پاسخ تستی وجود ندارد، هر تصمیم پیامد خودش را دارد.";state.chosen=null;
+ s.choices.forEach((c,i)=>{const btn=document.createElement("button");btn.className="choice";btn.innerHTML=`<span class="emoji">${c.icon}</span><span class="choice-text"><strong>${c.title}</strong><small>${c.desc}</small></span><span class="arrow">←</span>`;btn.addEventListener("click",()=>choose(i));$("choices").appendChild(btn);});
+ if(state.completed.includes(state.stage)){const fb=$("feedback");fb.hidden=false;fb.className="feedback good";fb.textContent="آفرین! این منطقه را قبلاً کامل کرده‌ای. می‌توانی دوباره تصمیم دیگری را امتحان کنی یا به مرحله بعد بروی.";}
+ renderMap();
 }
-
-// LEVEL QUEST DATA (Curriculum-based Adventure)
-const levelData = {
-    1: {
-        title: "جزیره کارآفرینی & مرز امکانات",
-        avatar: "👷‍♂️",
-        charName: "آرش (کارآفرین جوان):",
-        quests: [
-            {
-                dialogue: "سلام! ما توی کارگاهمون فقط ۱۰۰ واحد نیروی کار داریم. اگر همه رو بذاریم روی بستنی، ۱۰۰۰ بستنی تولید میشه و صفر آبمیوه (نقطه الف). اگر ۵۰۷ تا بستنی بپزیم و ۲۰۰ تا آبمیوه، روی مرز هستیم (نقطه ج). حالا اگر بخوایم ۵۰ تا آبمیوه بیشتر تولید کنیم، باید از چی بگذریم؟",
-                question: "هزینه فرصتِ تولید آبمیوه اضافی چیست؟",
-                options: [
-                    "دستپخت کارگران کارخانه",
-                    "مقدار بستنی که به خاطر تخصیص منابع کمتر تولید می‌شود",
-                    "قیمت فروش آبمیوه در مغازه",
-                    "هزینه برق و گاز کارگاه"
-                ],
-                correct: 1,
-                explanation: "آفرین! هزینه فرصت یعنی از دست دادن بهترین جایگزین (در اینجا مقدار بستنی کاهش‌یافته) برای به دست آوردن کالای دیگر!"
-            },
-            {
-                dialogue: "بازرس اومده کارگاه و می‌گه: 'شما الان ۵۵۰ تا بستنی و ۲۰۰ تا آبمیوه تولید می‌کنید (نقطه ز)؛ در حالی که می‌تونستید با همین امکانات ۷۵۰ تا بستنی بسازید!' این وضعیت یعنی چی؟",
-                question: "نقطه ز (داخل مرز امکانات) نشان‌دهنده چیست؟",
-                options: [
-                    "تولید فوق‌العاده و جادویی",
-                    "ناکارایی و اتلاف/بیکاری منابع کارگاه",
-                    "نقطه غیرقابل دستیابی با تکنولوژی امروز",
-                    "نقطه تعادل بازار"
-                ],
-                correct: 1,
-                explanation: "دقیقاً! هر نقطه‌ای داخل منحنی PPF نشان‌دهنده اتلاف منابع و بیکاری عوامل تولید (ناکارایی) است."
-            },
-            {
-                dialogue: "حالا می‌خوایم مرز امکانات تولید کارگاه رو کلاً به سمت راست منتقل کنیم تا به نقطه ح (خارج از مرز فعلی) برسیم. بهترین راهکار چیه؟",
-                question: "کدام عامل باعث انتقال مرز امکانات تولید به سمت راست می‌شود؟",
-                options: [
-                    "کاهش حقوق کارگران",
-                    "سرمایه‌گذاری دانش‌بنیان و ارتقای فناوری دستگاه‌ها",
-                    "تعطیل کردن خط تولید آبمیوه",
-                    "افزایش قیمت بستنی در بازار"
-                ],
-                correct: 1,
-                explanation: "عالی بود! ارتقای فناوری و افزایش منابع باعث رشد اقتصادی و انتقال مرز PPF به سمت راست می‌شود."
-            }
-        ]
-    },
-    2: {
-        title: "شهر بازار & دخالت دولت",
-        avatar: "👩‍💼",
-        charName: "سارا (نماینده خریداران در بازار):",
-        quests: [
-            {
-                dialogue: "به شهر بازار خوش آمدید! فروشندگان بستنی قیمت هر بستنی رو ۳۵۰ timeline/تومان گذاشتن. خریدارها صف کشیدن و خشمگینن چون جنس کمه و قیمت خیلی بالاست! برای رسیدن به نقطه تعادل (Equilibrium) چیکار کنیم؟",
-                question: "در وضعیت مازاد تقاضا و صف خریداران، قیمت تعادلی چگونه شکل می‌گیرد؟",
-                options: [
-                    "قیمت باید تا نقطه‌ای که مقدار عرضه و تقاضا برابر شود تعدیل گردد",
-                    "فروشندگان باید مغازه‌ها را ببندند",
-                    "دولت خرید بستنی را ممنوع کند",
-                    "تقاضا کلاً صفر شود"
-                ],
-                correct: 0,
-                explanation: "درست است! در قیمت تعادلی، منحنی عرضه و تقاضا متقاطع شده و صف و کمبود کالا از بین می‌رود."
-            },
-            {
-                dialogue: "دولت برای احداث جاده کارخانه تا بازار و تامین امنیت شهر احتیاج به درآمد دارد. این هزینه‌ها از چه منبعی تامین می‌شود؟",
-                question: "کالاهای عمومی و زیرساخت‌ها عمدتاً از چه راهی تامین مالی می‌شوند؟",
-                options: [
-                    "چاپ بی‌رویه اسکناس",
-                    "دریافت مالیات و عوارض قانونی",
-                    "وام گرفتن از کشورهای خارجی",
-                    "فروش کارخانه‌های خصوصی"
-                ],
-                correct: 1,
-                explanation: "کاملاً صحیح! مالیات منبع اصلی دولت برای ارائه خدمات عمومی و ساخت زیرساخت‌هاست."
-            }
-        ]
-    },
-    3: {
-        title: "پایتخت اقتصاد کلان",
-        avatar: "👨‍🏫",
-        charName: "استاد بهنام (تحلیل‌گر اقتصاد کلان):",
-        quests: [
-            {
-                dialogue: "در پایتخت، غول تورم بیدار شده! نقدینگی در دست مردم زیاد شده و قیمت‌ها مدام بالا می‌روند. بانک مرکزی برای مهار تورم چه کار کلانی انجام دهد؟",
-                question: "کدام سیاست کلان به کاهش و مهار نرخ تورم کمک می‌کند؟",
-                options: [
-                    "چاپ مجدد پول و پخش در خیابان",
-                    "جمع‌آوری نقدینگی سرگردان با اوراق مشارکت و هدایت به تولید دانش‌بنیان",
-                    "افزایش هزینه‌های جاری دولت",
-                    "کاهش تولید کارخانه‌ها"
-                ],
-                correct: 1,
-                explanation: "درخشان! جمع‌آوری نقدینگی و هدایت آن به سمت خطوط تولید واقعی، غول تورم را مهار می‌کند."
-            }
-        ]
-    },
-    4: {
-        title: "قلعه بورس & سبد دارایی",
-        avatar: "🧑‍💻",
-        charName: "نوید (مشاور مالی و بورس):",
-        quests: [
-            {
-                dialogue: "شما ۵۰ میلیون تومان پس‌انداز دارید و می‌خواهید قدرت خریدتان را در برابر تورم حفظ کنید. بهترین استراتژی هوش مالی چیست؟",
-                question: "اصل «عدم قرار دادن تمام تخم‌مرغ‌ها در یک سبد» در پس‌انداز یعنی چه؟",
-                options: [
-                    "تنوع‌بخشی به سبد دارایی (ترکیب بورس، طلا، سپرده و بیمه)",
-                    "نگه داشتن تمام پول نقد زیر بالش!",
-                    "خرید فقط یک سهم پرریسک در بورس",
-                    "خرج کردن تمام پول در یک روز"
-                ],
-                correct: 0,
-                explanation: "فوق‌العاده! تنوع‌بخشی به دارایی‌ها باعث کاهش ریسک و حفظ قدرت خرید در طول زمان می‌شود."
-            }
-        ]
-    }
-};
-
-// Functions
-function updateScoreboard() {
-    document.getElementById('total-score').innerText = playerScore;
-    let totalS = Object.values(levelStars).reduce((a, b) => a + b, 0);
-    document.getElementById('total-stars').innerText = `${totalS} / 12`;
-
-    // Update Map Nodes
-    for (let i = 1; i <= 4; i++) {
-        let node = document.getElementById(`node-${i}`);
-        if (i <= unlockedLevel) {
-            node.classList.remove('locked');
-            node.classList.add('unlocked');
-        } else {
-            node.classList.add('locked');
-            node.classList.remove('unlocked');
-        }
-
-        let starsElem = document.getElementById(`stars-lvl-${i}`);
-        let count = levelStars[i] || 0;
-        starsElem.innerText = "★".repeat(count) + "☆".repeat(3 - count);
-    }
+function choose(i){const s=stages[state.stage],c=s.choices[i];state.chosen=i;state.xp+=c.xp;state.money+=c.money;state.raw=clamp(state.raw+c.raw);state.work=clamp(state.work+c.work);state.happy=clamp(state.happy+c.happy);if(!state.completed.includes(state.stage)){state.completed.push(state.stage);state.badges+=1;}document.querySelectorAll(".choice").forEach((b,j)=>{b.disabled=true;if(j===i)b.classList.add("selected");});
+ const fb=$("feedback");fb.hidden=false;fb.className="feedback good";fb.textContent=c.why+"  پاداش تجربه: "+fa(c.xp)+" امتیاز."; $("missionStatus").textContent="تصمیمت ثبت شد؛ پیامد آن را در منابع شهر ببین."; $("nextBtn").disabled=false;
+ log(`منطقه «${s.title}»: ${c.title}. +${c.xp} تجربه.`);renderStats();renderMap();save();speak(c.why);
 }
-
-function startLevel(lvlNum) {
-    if (lvlNum > unlockedLevel) {
-        playSFX('wrong');
-        alert("🔒 این مرحله هنوز قفل است! ابتدا مراحل قبلی را با موفقیت تمام کنید.");
-        return;
-    }
-
-    currentActiveLevel = lvlNum;
-    currentQuestStepIndex = 0;
-    selectedOptionIndex = null;
-
-    document.getElementById('map-view').classList.remove('active');
-    document.getElementById('quest-screen').classList.add('active');
-
-    loadQuestStep();
-}
-
-function showMapView() {
-    document.getElementById('quest-screen').classList.remove('active');
-    document.getElementById('map-view').classList.add('active');
-    updateScoreboard();
-}
-
-function loadQuestStep() {
-    const data = levelData[currentActiveLevel];
-    const quest = data.quests[currentQuestStepIndex];
-
-    document.getElementById('quest-lvl-badge').innerText = `مرحله ${currentActiveLevel} - معما ${currentQuestStepIndex + 1}`;
-    document.getElementById('quest-avatar').innerText = data.avatar;
-    document.getElementById('quest-title').innerText = data.title;
-    document.getElementById('quest-narrator').innerText = `مأموریت: پاسخ به معماهای کاربردی درس`;
-
-    document.getElementById('char-name').innerText = data.charName;
-    document.getElementById('char-dialogue').innerText = quest.dialogue;
-
-    // Build Challenge Options
-    let html = `<p style="margin-bottom:12px; font-weight:bold; color:#38bdf8;">❓ ${quest.question}</p>`;
-    html += `<div class="options-grid">`;
-    quest.options.forEach((opt, idx) => {
-        let letter = ['الف', 'ب', 'ج', 'د'][idx];
-        html += `
-            <div class="option-card" id="opt-${idx}" onclick="selectOption(${idx})">
-                <span class="opt-letter">${letter}</span>
-                <span class="opt-text">${opt}</span>
-            </div>
-        `;
-    });
-    html += `</div>`;
-
-    document.getElementById('challenge-area').innerHTML = html;
-    document.getElementById('quest-feedback').classList.add('hidden');
-    document.getElementById('next-quest-btn').innerText = "پاسخ و ثبت تصمیم 🚀";
-    selectedOptionIndex = null;
-}
-
-function selectOption(idx) {
-    selectedOptionIndex = idx;
-    document.querySelectorAll('.option-card').forEach((card, i) => {
-        card.classList.toggle('selected', i === idx);
-    });
-}
-
-function nextQuestStep() {
-    if (selectedOptionIndex === null) {
-        alert("لطفاً ابتدا یکی از گزینه‌ها را انتخاب کنید!");
-        return;
-    }
-
-    const data = levelData[currentActiveLevel];
-    const quest = data.quests[currentQuestStepIndex];
-    const feedbackBox = document.getElementById('quest-feedback');
-
-    if (selectedOptionIndex === quest.correct) {
-        playSFX('coin');
-        playerScore += 250;
-        feedbackBox.className = "feedback-box correct";
-        feedbackBox.innerHTML = `✅ <strong>پاسخ درست!</strong> ${quest.explanation}`;
-        feedbackBox.classList.remove('hidden');
-
-        setTimeout(() => {
-            currentQuestStepIndex++;
-            if (currentQuestStepIndex < data.quests.length) {
-                loadQuestStep();
-            } else {
-                // Completed Level
-                playSFX('victory');
-                levelStars[currentActiveLevel] = 3;
-                if (unlockedLevel < currentActiveLevel + 1) {
-                    unlockedLevel = currentActiveLevel + 1;
-                }
-                alert(`🎉 آفرین! مرحله ${currentActiveLevel} با ۳ ستاره کامل به پایان رسید!`);
-                showMapView();
-
-                if (unlockedLevel > 4) {
-                    showCertificateIfReady();
-                }
-            }
-        }, 1800);
-    } else {
-        playSFX('wrong');
-        feedbackBox.className = "feedback-box wrong";
-        feedbackBox.innerHTML = `❌ <strong>پاسخ نادرست!</strong> دوباره تلاش کنید و به راهنمایی توجه کنید.`;
-        feedbackBox.classList.remove('hidden');
-    }
-}
-
-function showCertificateIfReady() {
-    document.getElementById('final-cert-score').innerText = `${playerScore} / 1000`;
-    document.getElementById('victory-modal').classList.remove('hidden');
-    playSFX('victory');
-}
-
-function closeVictoryModal() {
-    document.getElementById('victory-modal').classList.add('hidden');
-}
-
-window.onload = function() {
-    updateScoreboard();
-};
+function nextStage(){if(state.stage<stages.length-1){state.stage++;renderStage();save();window.scrollTo({top:0,behavior:"smooth"});speak(stages[state.stage].story);}else{const fb=$("feedback");fb.hidden=false;fb.className="feedback good";fb.textContent="🏆 تبریک! تو شش منطقه را پشت سر گذاشتی و شهر را به مقصد تازه‌ای رساندی. می‌توانی بازار را دوباره آزمایش کنی یا بازی را از ابتدا آغاز کنی."; $("nextBtn").disabled=true;toast("پایان فصل اول ماجراجویی!");log("شهر پایدار شد؛ پایان فصل اول بازی.");}}
+function market(){const p=+$("priceRange").value,q=+$("produceRange").value;const demand=clamp(60-p*0.8,5,60);const sold=Math.min(q,demand);const revenue=sold*p;const costs=q*8;const profit=revenue-costs;$("priceValue").textContent=fa(p);$("produceValue").textContent=fa(q);$("demandValue").textContent=fa(demand)+" عدد";$("soldValue").textContent=fa(sold)+" عدد";$("revenueValue").textContent=fa(revenue)+" سکه";const status=$("marketStatus");let label,explain;if(q>demand+5){label.textContent="مازاد عرضه";explain="تعداد کالای تولیدشده از تقاضای تقریبی بیشتر است؛ بخشی از کالا ممکن است فروش نرود. تولید را با نیاز بازار هماهنگ کن.";}else if(demand>q+5){label.textContent="کمبود کالا";explain="تقاضای تقریبی بیشتر از مقدار تولید است؛ شاید بخشی از خریداران نتوانند کالای موردنیازشان را پیدا کنند.";}else{label.textContent="نزدیک به تعادل";explain="مقدار تولید به تقاضای تقریبی نزدیک است؛ این وضعیت می‌تواند به کاهش مازاد یا کمبود کمک کند.";}if(profit>=0)explain+=` درآمد منهای هزینه ساده‌شده تولید، ${fa(profit)} سکه است.`;else explain+=` با این فرض ساده‌شده، هزینه تولید ${fa(-profit)} سکه بیشتر از درآمد است.`;$("marketExplanation").textContent=explain;$("marketMeter").style.width=clamp((sold/Math.max(1,demand))*100)+"%";}
+$("startBtn").addEventListener("click",()=>{document.querySelector(".dashboard").scrollIntoView({behavior:"smooth"});speak("به سرزمین اقتصاد خوش آمدی. اولین مأموریتت را انتخاب کن.");});
+$("voiceBtn").addEventListener("click",()=>{state.voice=!state.voice;$("voiceBtn").textContent=state.voice?"🔊 راهنمای صوتی: روشن":"🔊 راهنمای صوتی: خاموش";if(!("speechSynthesis" in window)){state.voice=false;$("voiceBtn").textContent="🔊 راهنمای صوتی پشتیبانی نمی‌شود";toast("مرورگر شما پخش گفتار را پشتیبانی نمی‌کند.");return;}if(state.voice){speak("راهنمای صوتی فارسی ایران فعال شد.");toast("راهنمای صوتی فعال شد.");}else window.speechSynthesis.cancel();save();});
+$("nextBtn").addEventListener("click",nextStage);
+$("marketBtn").addEventListener("click",()=>{market();toast("نتیجه بازار به‌روزرسانی شد.");speak($("marketExplanation").textContent);});
+$("priceRange").addEventListener("input",market);$("produceRange").addEventListener("input",market);
+$("resetBtn").addEventListener("click",()=>{if(confirm("پیشرفت بازی پاک شود و از ابتدا شروع کنی؟")){state={...initial,completed:[]};try{localStorage.removeItem("econAdventureSave");}catch(e){}$("journalList").innerHTML="<li>بازی از ابتدا آغاز شد. تصمیم اول را انتخاب کن.</li>";renderStats();renderStage();market();save();toast("بازی از ابتدا شروع شد.");}});
+document.querySelectorAll(".map-node").forEach(node=>node.addEventListener("click",()=>{const i=+node.dataset.stage;if(i<=state.stage){state.stage=i;renderStage();save();}}));
+if("speechSynthesis" in window)window.speechSynthesis.getVoices();
+renderStats();renderStage();market();
+})();

@@ -1,203 +1,103 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بازی ماجراجویی اقتصاد دهم | نقشه مراحل & مأموریت‌ها</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#102a43">
+<title>ماجراجویی در سرزمین اقتصاد</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="app">
-        <!-- Header & Player Scoreboard -->
-        <header class="main-header">
-            <div class="logo-area">
-                <span class="badge-tag">دبیرخانه کشوری اقتصاد</span>
-                <h1>🎮 ماجراجویی بزرگ در دنیای اقتصاد</h1>
-            </div>
-            <div class="player-stats">
-                <div class="stat-box">
-                    <span class="icon">⭐</span>
-                    <span class="label">ستاره‌ها:</span>
-                    <strong id="total-stars">0 / 12</strong>
-                </div>
-                <div class="stat-box">
-                    <span class="icon">🪙</span>
-                    <span class="label">سکه و امتیاز:</span>
-                    <strong id="total-score">0</strong>
-                </div>
-                <div class="designer-badge">
-                    <span class="icon">🎓</span>
-                    <div class="info">
-                        <span class="title">طراح:</span>
-                        <strong class="name">مرضیه صفرعلی</strong>
-                    </div>
-                </div>
-            </div>
-        </header>
+<header class="topbar">
+  <div class="brand"><span class="brand-icon">🧭</span><div><strong>سرزمین اقتصاد</strong><small>ماجراجویی بزرگ اقتصاد دهم</small></div></div>
+  <div class="stats">
+    <div class="stat"><span>⭐ تجربه</span><b id="xp">۰</b></div>
+    <div class="stat"><span>🪙 سرمایه</span><b id="money">۱۰۰</b></div>
+    <div class="stat"><span>🏅 نشان‌ها</span><b id="badges">۰</b></div>
+  </div>
+</header>
 
-        <!-- Slogan Banner -->
-        <div class="slogan-banner">
-            ✨ «اقتصاد را فقط تدریس نکنیم؛ اندیشیدن اقتصادی را زندگی کنیم.» ✨
-        </div>
+<main class="shell">
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow">یک بازی داستانی ـ مدیریتی، نه آزمون چندگزینه‌ای</div>
+      <h1>اقتصاد را <span>زندگی کن!</span></h1>
+      <p>به شهری وارد شده‌ای که برای رشد به تصمیم‌های اقتصادی تو نیاز دارد. منابع محدودند، مردم انتخاب می‌کنند و هر تصمیم پیامد خودش را دارد.</p>
+      <div class="hero-actions"><button class="primary" id="startBtn">🚀 شروع ماجراجویی</button><button class="secondary" id="voiceBtn">🔊 راهنمای صوتی: خاموش</button></div>
+      <p class="voice-note">راهنمای صوتی در صورت پشتیبانی مرورگر، با صدای فارسی ایران (fa-IR) پخش می‌شود.</p>
+    </div>
+    <div class="hero-art" aria-hidden="true"><div class="sun"></div><div class="cloud c1"></div><div class="cloud c2"></div><div class="mountain m1"></div><div class="mountain m2"></div><div class="town">🏘️</div><div class="road"></div><div class="character">🧑🏻‍💼</div><div class="coin coin1">🪙</div><div class="coin coin2">🌱</div></div>
+  </section>
 
-        <!-- MAIN MAP VIEW -->
-        <div id="map-view" class="view-screen active">
-            <div class="map-header">
-                <h2>🗺️ نقشه راه ماجراجویی (انتخاب مرحله و مأموریت)</h2>
-                <p>روی هر مرحله کلیک کنید تا وارد مأموریت و معماهای اقتصادی آن شوید!</p>
-            </div>
-
-            <!-- Visual Adventure Map Canvas/Grid -->
-            <div class="adventure-map">
-                <svg class="map-connections" viewBox="0 0 1000 300" preserveAspectRatio="none">
-                    <path d="M 150 150 Q 300 50, 400 150 T 650 150 T 880 150" fill="none" stroke="#f59e0b" stroke-width="6" stroke-dasharray="10 10" class="animated-path"/>
-                </svg>
-
-                <div class="map-nodes">
-                    <!-- Node 1 -->
-                    <div class="map-node unlocked" id="node-1" onclick="startLevel(1)">
-                        <div class="node-icon">🏝️</div>
-                        <div class="node-info">
-                            <span class="level-num">مرحله ۱</span>
-                            <h3>جزیره کارآفرینی</h3>
-                            <span class="lesson-tag">درس ۴: مرز امکانات</span>
-                            <div class="stars-display" id="stars-lvl-1">☆☆☆</div>
-                        </div>
-                    </div>
-
-                    <!-- Node 2 -->
-                    <div class="map-node locked" id="node-2" onclick="startLevel(2)">
-                        <div class="node-icon">🏛️</div>
-                        <div class="node-info">
-                            <span class="level-num">مرحله ۲</span>
-                            <h3>شهر بازار & دولت</h3>
-                            <span class="lesson-tag">درس ۵ و ۶: تعادل & مالیات</span>
-                            <div class="stars-display" id="stars-lvl-2">☆☆☆</div>
-                        </div>
-                    </div>
-
-                    <!-- Node 3 -->
-                    <div class="map-node locked" id="node-3" onclick="startLevel(3)">
-                        <div class="node-icon">🏙️</div>
-                        <div class="node-info">
-                            <span class="level-num">مرحله ۳</span>
-                            <h3>پایتخت اقتصاد کلان</h3>
-                            <span class="lesson-tag">درس ۸ تا ۱۱: تورم & GDP</span>
-                            <div class="stars-display" id="stars-lvl-3">☆☆☆</div>
-                        </div>
-                    </div>
-
-                    <!-- Node 4 -->
-                    <div class="map-node locked" id="node-4" onclick="startLevel(4)">
-                        <div class="node-icon">🏰</div>
-                        <div class="node-info">
-                            <span class="level-num">مرحله ۴</span>
-                            <h3>قلعه بورس & دارایی</h3>
-                            <span class="lesson-tag">درس ۱۲ تا ۱۴: پس‌انداز</span>
-                            <div class="stars-display" id="stars-lvl-4">☆☆☆</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="map-footer-actions">
-                <button class="btn-cert-preview" onclick="showCertificateIfReady()">📜 مشاهده گواهی‌نامه پیروزی</button>
-            </div>
-        </div>
-
-        <!-- LEVEL QUEST MODAL / SCREEN -->
-        <div id="quest-screen" class="view-screen">
-            <div class="quest-container">
-                <button class="back-map-btn" onclick="showMapView()">⬅️ بازگشت به نقشه مراحل</button>
-                
-                <div class="quest-card">
-                    <!-- Character Quest Banner -->
-                    <div class="quest-banner">
-                        <div class="avatar-box">
-                            <span class="avatar-emoji" id="quest-avatar">👨‍💼</span>
-                        </div>
-                        <div class="quest-intro">
-                            <span class="badge-lvl" id="quest-lvl-badge">مرحله ۱</span>
-                            <h2 id="quest-title">عنوان مأموریت</h2>
-                            <p id="quest-narrator">توضیحات راوی...</p>
-                        </div>
-                    </div>
-
-                    <!-- Interactive Dialogue Bubble -->
-                    <div class="speech-bubble">
-                        <strong id="char-name">آرش (کارآفرین):</strong>
-                        <p id="char-dialogue">سلام! به کارگاه ما خوش آمدید...</p>
-                    </div>
-
-                    <!-- Interactive Challenge Area -->
-                    <div class="challenge-body" id="challenge-area">
-                        <!-- Dynamic content injected by JS -->
-                    </div>
-
-                    <!-- Quest Actions & Feedback -->
-                    <div class="quest-footer">
-                        <div id="quest-feedback" class="feedback-box hidden"></div>
-                        <button id="next-quest-btn" class="btn-primary" onclick="nextQuestStep()">پاسخ و ثبت تصمیم 🚀</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- VICTORY & CERTIFICATE MODAL -->
-        <div id="victory-modal" class="modal-overlay hidden">
-            <div class="modal-card">
-                <div class="victory-header">
-                    <span class="trophy-icon">🏆</span>
-                    <h2>پیروزی بزرگ! شما قهرمان اقتصاد شدید!</h2>
-                    <p>تمام مراحل و معماهای اقتصاد دهم را با موفقیت فتح کردید.</p>
-                </div>
-
-                <div class="certificate-box" id="certificate">
-                    <div class="cert-border">
-                        <div class="cert-header">
-                            <span class="cert-emblem">🏛️</span>
-                            <h3>گواهی‌نامه شایستگی و مهارتی اقتصاد</h3>
-                            <span class="cert-sub">دبیرخانه کشوری آموزش اقتصاد</span>
-                        </div>
-                        <div class="cert-body">
-                            <p>بدین‌وسیله گواهی می‌شود دانش‌آموز عزیز با موفقیت کامل تمامی مراحل سناریومحور و معماهای کاربردی کتاب اقتصاد پایه دهم را به پایان رسانده است.</p>
-                            <div class="cert-details">
-                                <div class="detail-item">
-                                    <span>امتیاز کل کسب‌شده:</span>
-                                    <strong id="final-cert-score">1000 / 1000</strong>
-                                </div>
-                                <div class="detail-item">
-                                    <span>مدال افتخار:</span>
-                                    <strong>🥇 استاد کلان مدیریت اقتصادی</strong>
-                                </div>
-                            </div>
-                            <div class="cert-slogan">
-                                ✨ «اقتصاد را فقط تدریس نکنیم؛ اندیشیدن اقتصادی را زندگی کنیم.» ✨
-                            </div>
-                        </div>
-                        <div class="cert-footer">
-                            <div class="sign-block">
-                                <span>طراح و توسعه‌دهنده اثر:</span>
-                                <strong>مرضیه صفرعلی</strong>
-                                <small>عضو دبیرخانه کشوری اقتصاد</small>
-                            </div>
-                            <div class="seal-mark">
-                                🎖️ تاییدشده
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal-actions">
-                    <button class="btn-print" onclick="window.print()">🖨️ چاپ / ذخیره گواهی‌نامه PDF</button>
-                    <button class="btn-secondary" onclick="closeVictoryModal()">بستن و ادامه</button>
-                </div>
-            </div>
-        </div>
+  <section class="dashboard">
+    <div class="panel map-panel">
+      <div class="section-heading"><div><span class="eyebrow">نقشه پیشرفت</span><h2>مسیر ساختن یک شهر آباد</h2></div><span class="pill" id="progressLabel">مرحله ۱ از ۶</span></div>
+      <div class="map-path" id="mapPath">
+        <button class="map-node active" data-stage="0"><span>🌱</span><b>دهکده آغاز</b><small>نیاز و انتخاب</small></button>
+        <i class="path-line"></i>
+        <button class="map-node locked" data-stage="1"><span>🛠️</span><b>کارگاه تولید</b><small>منابع و تولید</small></button>
+        <i class="path-line"></i>
+        <button class="map-node locked" data-stage="2"><span>🛒</span><b>بازار شهر</b><small>عرضه و تقاضا</small></button>
+        <i class="path-line"></i>
+        <button class="map-node locked" data-stage="3"><span>🏦</span><b>شهر پولی</b><small>پول و پس‌انداز</small></button>
+        <i class="path-line"></i>
+        <button class="map-node locked" data-stage="4"><span>🚚</span><b>راه بازرگانی</b><small>تجارت و انتخاب</small></button>
+        <i class="path-line"></i>
+        <button class="map-node locked" data-stage="5"><span>🏙️</span><b>شهر پایدار</b><small>تصمیم نهایی</small></button>
+      </div>
+      <div class="map-foot"><span>🔒 هر منطقه با انجام مأموریت قبلی آزاد می‌شود.</span><span id="savedLabel">پیشرفت روی همین دستگاه ذخیره می‌شود.</span></div>
     </div>
 
-    <!-- Web Audio Elements for Game SFX -->
-    <script src="script.js"></script>
+    <div class="panel mission-panel">
+      <div class="section-heading"><div><span class="eyebrow">مأموریت فعال</span><h2 id="missionTitle">دهکده آغاز</h2></div><span class="mission-icon" id="missionIcon">🌱</span></div>
+      <p id="missionStory" class="story">به دهکده سبز خوش آمدی! خانواده‌ها نیازهای زیادی دارند، اما وقت و منابع محدود است. اولین تصمیم تو مشخص می‌کند دهکده از کجا شروع کند.</p>
+      <div class="concept" id="conceptBox"><b>💡 مفهوم اقتصادی</b><p id="conceptText">کمیابی یعنی منابع برای برآوردن همه خواسته‌ها کافی نیستند؛ بنابراین باید انتخاب کنیم.</p></div>
+      <div class="choice-list" id="choices"></div>
+      <div class="feedback" id="feedback" aria-live="polite" hidden></div>
+      <div class="mission-footer"><span id="missionStatus">یک تصمیم بگیر تا مسیرت آغاز شود.</span><button id="nextBtn" class="primary" disabled>رفتن به منطقه بعد ←</button></div>
+    </div>
+  </section>
+
+  <section class="panel market-panel">
+    <div class="section-heading"><div><span class="eyebrow">کارگاه تصمیم‌گیری</span><h2>بازار کوچک شهر</h2><p class="muted">قیمت و میزان تولید را تنظیم کن و پیامد تصمیم را ببین.</p></div><span class="market-badge">شبیه‌سازی زنده</span></div>
+    <div class="market-grid">
+      <div class="market-controls">
+        <label for="priceRange">قیمت نان <strong><span id="priceValue">۲۰</span> سکه</strong></label>
+        <input id="priceRange" type="range" min="5" max="50" value="20">
+        <div class="range-labels"><span>ارزان</span><span>گران</span></div>
+        <label for="produceRange">تعداد نان تولیدشده <strong><span id="produceValue">۳۰</span> عدد</strong></label>
+        <input id="produceRange" type="range" min="5" max="60" value="30">
+        <div class="range-labels"><span>کم</span><span>زیاد</span></div>
+        <button id="marketBtn" class="primary wide">📦 بررسی نتیجه تصمیم</button>
+      </div>
+      <div class="market-result">
+        <div class="result-stat"><span>👥 تقاضای تقریبی</span><b id="demandValue">۳۶ عدد</b></div>
+        <div class="result-stat"><span>🧺 فروش احتمالی</span><b id="soldValue">۳۰ عدد</b></div>
+        <div class="result-stat"><span>💰 درآمد فروش</span><b id="revenueValue">۶۰۰ سکه</b></div>
+        <div class="result-stat"><span>📉 وضعیت بازار</span><b id="marketStatus">بازار متعادل</b></div>
+        <div class="meter"><div id="marketMeter"></div></div>
+        <p id="marketExplanation" class="result-explanation">با تغییر قیمت و تولید، نتیجه بازار را بررسی کن.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bottom-grid">
+    <div class="panel inventory">
+      <div class="section-heading"><div><span class="eyebrow">منابع شهر</span><h2>انبار و دارایی‌ها</h2></div>📦</div>
+      <div class="resource-row"><span>🌾 مواد اولیه</span><div class="resource-bar"><i id="rawBar" style="width:60%"></i></div><b id="rawValue">۶۰</b></div>
+      <div class="resource-row"><span>👷 نیروی کار</span><div class="resource-bar"><i id="workBar" style="width:50%"></i></div><b id="workValue">۵۰</b></div>
+      <div class="resource-row"><span>😊 رضایت مردم</span><div class="resource-bar"><i id="happyBar" style="width:55%"></i></div><b id="happyValue">۵۵٪</b></div>
+      <p class="muted tiny">تصمیم‌ها می‌توانند منابع و رضایت مردم را تغییر دهند.</p>
+    </div>
+    <div class="panel journal">
+      <div class="section-heading"><div><span class="eyebrow">دفتر ماجراجویی</span><h2>اتفاق‌های شهر</h2></div>📜</div>
+      <ul id="journalList"><li>ماجراجویی آماده شروع است. اولین تصمیم را انتخاب کن.</li></ul>
+      <button class="text-button" id="resetBtn">شروع دوباره از ابتدا</button>
+    </div>
+  </section>
+  <footer>ساخته‌شده برای یادگیری فعال اقتصاد دهم • نسخه آموزشی قابل توسعه</footer>
+</main>
+<div class="toast" id="toast" role="status"></div>
+<script src="script.js"></script>
 </body>
 </html>
